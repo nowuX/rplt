@@ -36,6 +36,7 @@ fn main() {
     let s = vec![
         "p -> ( p or q )",
         "( p and q ) and ~ p",
+        "( p or q ) -> q"
     ];
     for i in s {
         let mut tokens = parser(i);
