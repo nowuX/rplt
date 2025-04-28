@@ -11,4 +11,5 @@ categories = ["parsing"]
 license = "MIT"
 
 [dependencies]
-comfy-table = { version = "7.1.4" }
+colored = { version = "3.0.0" }
+comfy-table = { version = "7.1.4", features = ["custom_styling"] }

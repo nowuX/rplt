@@ -13,7 +13,7 @@ pub fn parser(input: &str) -> Vec<Token> {
             "<->" => Token::BiConditional,
             "(" => Token::OpenParen,
             ")" => Token::CloseParen,
-            &_ => Token::Var(word.chars().next().unwrap()),
+            &_ => Token::Var(word.chars().next().unwrap().to_string()),
         })
         .collect()
 }
@@ -28,9 +28,9 @@ pub fn vars_values(tokens: &[Token]) -> HashMap<String, Vec<bool>> {
             .map(|i| {
                 (0..n)
                     .map(|j| (i >> (n - 1 - j) & 1 == 1))
-                    .collect::<Vec<bool>>()
+                    .collect::<Vec<_>>()
             })
-            .collect::<Vec<Vec<bool>>>();
+            .collect::<Vec<Vec<_>>>();
         x.reverse();
         x
     };
@@ -46,11 +46,11 @@ pub fn vars_values(tokens: &[Token]) -> HashMap<String, Vec<bool>> {
     map
 }
 
-pub fn get_vars(tokens: &[Token]) -> Vec<char> {
+pub fn get_vars(tokens: &[Token]) -> Vec<String> {
     let mut vars = HashSet::new();
     for t in tokens {
         if let Token::Var(c) = t {
-            vars.insert(*c);
+            vars.insert(c.clone());
         }
     }
     let mut vars = vars.into_iter().collect::<Vec<_>>();

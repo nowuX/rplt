@@ -1,6 +1,6 @@
 use comfy_table::modifiers::UTF8_ROUND_CORNERS;
 use comfy_table::presets::UTF8_FULL;
-use comfy_table::{ContentArrangement, Table};
+use comfy_table::{Cell, CellAlignment, ContentArrangement, Table};
 use std::collections::HashMap;
 
 pub fn generate_table(ctx: &HashMap<String, Vec<bool>>) -> Table {
@@ -32,6 +32,7 @@ pub fn generate_table(ctx: &HashMap<String, Vec<bool>>) -> Table {
                         }
                     }
                 })
+                .map(|x| Cell::new(x).set_alignment(CellAlignment::Center))
                 .collect::<Vec<_>>(),
         );
     }

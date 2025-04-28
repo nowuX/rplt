@@ -5,7 +5,7 @@ type Pattern = (usize, Box<dyn Fn(&[Token]) -> Option<Expr>>);
 pub fn tokens_to_expr(tokens: &mut Vec<Token>) -> Expr {
     if tokens.len() == 1 {
         if let Some(Token::Var(p)) = tokens.first() {
-            return Expr::Var(*p);
+            return Expr::Var(p.to_owned());
         }
         panic!("Unexpected token in single token expression");
     }
@@ -49,7 +49,7 @@ fn not_parser() -> Vec<Pattern> {
         (
             2,
             Box::new(|slice: &[Token]| match slice {
-                [Token::Not, Token::Var(p)] => Some(Expr::Not(Box::new(Expr::Var(*p)))),
+                [Token::Not, Token::Var(p)] => Some(Expr::Not(Box::new(Expr::Var(p.clone())))),
                 _ => None,
             }),
         ),
@@ -74,8 +74,8 @@ fn var_to_var() -> Vec<Pattern> {
         3,
         Box::new(|slice: &[Token]| match slice {
             [Token::Var(p), t, Token::Var(q)] => {
-                let p = Box::new(Expr::Var(*p));
-                let q = Box::new(Expr::Var(*q));
+                let p = Box::new(Expr::Var(p.clone()));
+                let q = Box::new(Expr::Var(q.clone()));
                 expr_matcher(t, p, q)
             }
             _ => None,
@@ -97,7 +97,7 @@ fn var_to_expr() -> Vec<Pattern> {
                     Token::Expr(q),
                     Token::CloseParen,
                 ] => {
-                    let p = Box::new(Expr::Var(*p));
+                    let p = Box::new(Expr::Var(p.clone()));
                     let q = Box::new(q.clone());
                     expr_matcher(t, p, q)
                 }
@@ -108,7 +108,7 @@ fn var_to_expr() -> Vec<Pattern> {
             3,
             Box::new(|slice: &[Token]| match slice {
                 [Token::Var(p), t, Token::Expr(q)] => {
-                    let p = Box::new(Expr::Var(*p));
+                    let p = Box::new(Expr::Var(p.to_owned()));
                     let q = Box::new(q.clone());
                     expr_matcher(t, p, q)
                 }
@@ -133,7 +133,7 @@ fn expr_to_var() -> Vec<Pattern> {
                     Token::Var(q),
                 ] => {
                     let p = Box::new(p.clone());
-                    let q = Box::new(Expr::Var(*q));
+                    let q = Box::new(Expr::Var(q.to_owned()));
                     expr_matcher(t, p, q)
                 }
                 _ => None,
@@ -144,7 +144,7 @@ fn expr_to_var() -> Vec<Pattern> {
             Box::new(|slice: &[Token]| match slice {
                 [Token::Expr(p), t, Token::Var(q)] => {
                     let p = Box::new(p.clone());
-                    let q = Box::new(Expr::Var(*q));
+                    let q = Box::new(Expr::Var(q.to_owned()));
                     expr_matcher(t, p, q)
                 }
                 _ => None,

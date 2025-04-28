@@ -5,8 +5,8 @@ pub fn eval(expr: &Expr, ctx: &mut HashMap<String, Vec<bool>>) -> Vec<bool> {
     let result = match expr {
         Expr::Var(p) => ctx.get(&p.to_string()).unwrap().clone(),
         Expr::Not(p) => match &**p {
-            &Expr::Var(p) => not(ctx.get(&p.to_string()).unwrap()),
-            _ => not(&eval(p, ctx)),
+            Expr::Var(p) => not(ctx.get(&p.clone()).unwrap()),
+            _ => not(&eval(&p, ctx)),
         },
         Expr::Or(p, q) => {
             let (p, q) = get_p_q(p, q, ctx);
@@ -25,7 +25,7 @@ pub fn eval(expr: &Expr, ctx: &mut HashMap<String, Vec<bool>>) -> Vec<bool> {
             bi_conditional(&p, &q)
         }
     };
-    ctx.insert(format!("{expr}"), result.clone());
+    ctx.insert(expr.to_string(true), result.clone());
     result
 }
 
