@@ -2,13 +2,15 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
     paths:
-      - '**/*.rs'  # Trigger only on changes to `.rs` files
+      - '**/*.rs'
+      - 'Cargo.toml'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
     paths:
-      - '**/*.rs'  # Trigger only on changes to `.rs` files
+      - '**/*.rs'
+      - 'Cargo.toml'
 
 env:
   CARGO_TERM_COLOR: always

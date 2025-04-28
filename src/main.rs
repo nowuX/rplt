@@ -8,7 +8,6 @@ fn main() {
         "p -> ( p or q )",
         "( p and q ) and ~ p",
         "( p or q ) -> q",
-        "~ p",
         "( ( p or q ) and ( ~ r or s ) ) -> s",
     ];
     for i in s {
