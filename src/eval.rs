@@ -6,7 +6,7 @@ pub fn eval(expr: &Expr, ctx: &mut HashMap<String, Vec<bool>>) -> Vec<bool> {
         Expr::Var(p) => ctx.get(&p.to_string()).unwrap().clone(),
         Expr::Not(p) => match &**p {
             Expr::Var(p) => not(ctx.get(&p.clone()).unwrap()),
-            _ => not(&eval(&p, ctx)),
+            _ => not(&eval(p, ctx)),
         },
         Expr::Or(p, q) => {
             let (p, q) = get_p_q(p, q, ctx);

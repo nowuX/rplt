@@ -26,6 +26,7 @@ pub enum Expr {
     BiConditional(Box<Expr>, Box<Expr>),
 }
 
+#[expect(unused)]
 pub struct Value {
     p: bool,
     new: bool,

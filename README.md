@@ -1,5 +1,5 @@
 # RLPT
-RPLT (Rust Propsoitional Logic Table) is a lightweight truth table generator for propositional logic expressions. Written in Rust, it parses logical formulas and outputs their complete truth tables. Supports operators like NOT, AND, OR, CONDITIONAL and BICONDITIONAL
+RPLT (Rust Propositional Logic Table) is a lightweight truth table generator for propositional logic expressions. Written in Rust, it parses logical formulas and outputs their complete truth tables. Supports operators like NOT, AND, OR, CONDITIONAL and BICONDITIONAL
 
 # Build From Source
 
@@ -19,10 +19,13 @@ cargo run
 Change the `s` value in `main.rs`
 ```rust
 // in main.rs
-let s = vec![
-    "p -> ( p or q )",
-    "( p and q ) and ~ p",
-];
+fn main() {
+    let s = vec![
+        "p -> ( p or q )",
+        "( p and q ) and ~ p",
+        // Add or edit this
+    ];
+}
 // cargo run # in console
 /**
 Output:
@@ -53,7 +56,8 @@ Output:
 ```
 
 ## TODO
-- [ ] Support arguments with Clap
-- [ ] Better display value `~ p` -> `[F] V`, `p or q` -> `V [V] F`
-- [ ] Optional better display
-- [ ] Just vars and result table
+- [ ] Support arguments with [clap](https://lib.rs/crates/clap)
+  - [ ] Only vars values and final result
+  - [ ] Verbose arguments in each operation. `p or q` -> `V [V] F`
+  - [ ] Tautology, contradiction and contingency indicator (IDK)
+- [X] Better display operation `~ p` to `<color>~ p`

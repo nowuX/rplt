@@ -36,6 +36,5 @@ pub fn generate_table(ctx: &HashMap<String, Vec<bool>>) -> Table {
                 .collect::<Vec<_>>(),
         );
     }
-
     t
 }

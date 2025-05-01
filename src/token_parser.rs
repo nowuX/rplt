@@ -37,10 +37,7 @@ pub fn vars_values(tokens: &[Token]) -> HashMap<String, Vec<bool>> {
 
     let mut map = HashMap::new();
     for col in 0..values.first().unwrap().len() {
-        let mut column = vec![];
-        for row in &values {
-            column.push(row[col]);
-        }
+        let column = values.iter().map(|row| row[col]).collect::<Vec<_>>();
         map.insert(vars[col].to_string(), column);
     }
     map
