@@ -1,13 +1,19 @@
-use crate::Expr;
+use crate::{Expr, Value};
 use std::collections::HashMap;
 
-pub fn eval(expr: &Expr, ctx: &mut HashMap<String, Vec<bool>>) -> Vec<bool> {
+pub fn eval(expr: &Expr, ctx: &mut HashMap<String, Vec<Value>>) -> Vec<Value> {
     let result = match expr {
-        Expr::Var(p) => ctx.get(&p.to_string()).unwrap().clone(),
-        Expr::Not(p) => match &**p {
-            Expr::Var(p) => not(ctx.get(&p.clone()).unwrap()),
-            _ => not(&eval(p, ctx)),
+        Expr::Var(p) => match ctx.get(&p.to_string()) {
+            None => panic!("Undefined variable: {}", p),
+            Some(p) => p.clone(),
         },
+        Expr::Not(p) => {
+            let p = match &**p {
+                Expr::Var(p) => ctx.get(&p.clone()).unwrap(),
+                _ => &eval(p, ctx),
+            };
+            not(p)
+        }
         Expr::Or(p, q) => {
             let (p, q) = get_p_q(p, q, ctx);
             or(&p, &q)
@@ -29,33 +35,95 @@ pub fn eval(expr: &Expr, ctx: &mut HashMap<String, Vec<bool>>) -> Vec<bool> {
     result
 }
 
-pub fn not(p: &[bool]) -> Vec<bool> {
-    p.iter().map(|v| !v).collect()
-}
-
-pub fn or(p: &[bool], q: &[bool]) -> Vec<bool> {
-    p.iter().zip(q.iter()).map(|(p, q)| p | q).collect()
-}
-
-pub fn and(p: &[bool], q: &[bool]) -> Vec<bool> {
-    p.iter().zip(q.iter()).map(|(p, q)| p & q).collect()
-}
-
-pub fn conditional(p: &[bool], q: &[bool]) -> Vec<bool> {
+pub fn not(p: &[Value]) -> Vec<Value> {
     p.iter()
-        .zip(q.iter())
-        .map(|(p, q)| !matches!((p, q), (true, false)))
+        .map(|p| {
+            let p = match p {
+                Value::Value(p) => p,
+                Value::Expr(_, p, _) => p,
+            };
+            Value::Expr(Some(*p), !p, None)
+        })
         .collect()
 }
 
-pub fn bi_conditional(p: &[bool], q: &[bool]) -> Vec<bool> {
+pub fn or(p: &[Value], q: &[Value]) -> Vec<Value> {
     p.iter()
         .zip(q.iter())
-        .map(|(p, q)| matches!((p, q), (true, true) | (false, false)))
+        .map(|(p, q)| {
+            let p = match p {
+                Value::Value(p) => p,
+                Value::Expr(_, p, _) => p,
+            };
+            let q = match q {
+                Value::Value(q) => q,
+                Value::Expr(_, q, _) => q,
+            };
+            Value::Expr(Some(*p), p | q, Some(*q))
+        })
         .collect()
 }
 
-pub fn get_p_q(p: &Expr, q: &Expr, ctx: &mut HashMap<String, Vec<bool>>) -> (Vec<bool>, Vec<bool>) {
+pub fn and(p: &[Value], q: &[Value]) -> Vec<Value> {
+    p.iter()
+        .zip(q.iter())
+        .map(|(p, q)| {
+            let p = match p {
+                Value::Value(p) => p,
+                Value::Expr(_, p, _) => p,
+            };
+            let q = match q {
+                Value::Value(q) => q,
+                Value::Expr(_, q, _) => q,
+            };
+            Value::Expr(Some(*p), p & q, Some(*q))
+        })
+        .collect()
+}
+
+pub fn conditional(p: &[Value], q: &[Value]) -> Vec<Value> {
+    p.iter()
+        .zip(q.iter())
+        .map(|(p, q)| {
+            let p = match p {
+                Value::Value(p) => p,
+                Value::Expr(_, p, _) => p,
+            };
+            let q = match q {
+                Value::Value(q) => q,
+                Value::Expr(_, q, _) => q,
+            };
+            Value::Expr(Some(*p), !matches!((p, q), (true, false)), Some(*q))
+        })
+        .collect()
+}
+
+pub fn bi_conditional(p: &[Value], q: &[Value]) -> Vec<Value> {
+    p.iter()
+        .zip(q.iter())
+        .map(|(p, q)| {
+            let p = match p {
+                Value::Value(p) => p,
+                Value::Expr(_, p, _) => p,
+            };
+            let q = match q {
+                Value::Value(q) => q,
+                Value::Expr(_, q, _) => q,
+            };
+            Value::Expr(
+                Some(*p),
+                matches!((p, q), (true, true) | (false, false)),
+                Some(*q),
+            )
+        })
+        .collect()
+}
+
+pub fn get_p_q(
+    p: &Expr,
+    q: &Expr,
+    ctx: &mut HashMap<String, Vec<Value>>,
+) -> (Vec<Value>, Vec<Value>) {
     let p = match p {
         Expr::Var(p) => ctx.get(&p.to_string()).unwrap().clone(),
         _ => eval(p, ctx),

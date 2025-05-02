@@ -1,3 +1,5 @@
+use colored::Colorize;
+
 pub mod eval;
 pub mod expr_parser;
 pub mod table;
@@ -26,20 +28,20 @@ pub enum Expr {
     BiConditional(Box<Expr>, Box<Expr>),
 }
 
-#[expect(unused)]
-pub struct Value {
-    p: bool,
-    new: bool,
-    q: bool,
+#[derive(Debug, Clone, PartialEq)]
+pub enum Value {
+    Value(bool),
+    Expr(Option<bool>, bool, Option<bool>),
 }
 
 impl Value {
-    pub fn new(p: bool, new: bool, q: bool) -> Self {
-        Self { p, new, q }
+    pub fn value(&self) -> bool {
+        match self {
+            Value::Value(p) => *p,
+            Value::Expr(_, p, _) => *p,
+        }
     }
 }
-
-use colored::Colorize;
 
 impl Expr {
     pub fn to_string(&self, first: bool) -> String {

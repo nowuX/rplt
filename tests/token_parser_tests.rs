@@ -1,5 +1,5 @@
 use rplt::token_parser::{parser, vars_values};
-use rplt::Token;
+use rplt::{Token, Value};
 use std::collections::HashMap;
 
 #[test]
@@ -67,13 +67,32 @@ fn long_str_parser() {
 fn vars_values_test() {
     assert_eq!(
         vars_values(&[Token::Var(String::from("p"))]),
-        HashMap::from([(String::from("p"), vec![true, false])])
+        HashMap::from([(
+            String::from("p"),
+            vec![Value::Value(true), Value::Value(false)]
+        )])
     );
     assert_eq!(
         vars_values(&[Token::Var(String::from("p")), Token::Var(String::from("q"))]),
         HashMap::from([
-            (String::from("p"), vec![true, true, false, false]),
-            (String::from("q"), vec![true, false, true, false])
+            (
+                String::from("p"),
+                vec![
+                    Value::Value(true),
+                    Value::Value(true),
+                    Value::Value(false),
+                    Value::Value(false)
+                ]
+            ),
+            (
+                String::from("q"),
+                vec![
+                    Value::Value(true),
+                    Value::Value(false),
+                    Value::Value(true),
+                    Value::Value(false)
+                ]
+            )
         ])
     );
 }

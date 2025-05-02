@@ -1,8 +1,8 @@
-use crate::Token;
+use crate::{Token, Value};
 use std::collections::{HashMap, HashSet};
 
 pub fn parser(input: &str) -> Vec<Token> {
-    // TODO change Var(char) to Var(String) to able to do ~ person instead or ~ p
+    // TODO change Token::Var(char) to Token::Var(String) to able to do ~ person instead or ~ p
     input
         .split_whitespace()
         .map(|word| match word {
@@ -18,7 +18,7 @@ pub fn parser(input: &str) -> Vec<Token> {
         .collect()
 }
 
-pub fn vars_values(tokens: &[Token]) -> HashMap<String, Vec<bool>> {
+pub fn vars_values(tokens: &[Token]) -> HashMap<String, Vec<Value>> {
     let vars = get_vars(tokens);
 
     let n: usize = vars.len();
@@ -37,7 +37,10 @@ pub fn vars_values(tokens: &[Token]) -> HashMap<String, Vec<bool>> {
 
     let mut map = HashMap::new();
     for col in 0..values.first().unwrap().len() {
-        let column = values.iter().map(|row| row[col]).collect::<Vec<_>>();
+        let column = values
+            .iter()
+            .map(|row| Value::Value(row[col]))
+            .collect::<Vec<_>>();
         map.insert(vars[col].to_string(), column);
     }
     map

@@ -27,37 +27,13 @@ fn main() {
     ];
 }
 // cargo run # in console
-/**
-Output:
-╭───┬───┬──────────┬─────────────────╮
-│ p ┆ q ┆ (p or q) ┆ (p -> (p or q)) │
-╞═══╪═══╪══════════╪═════════════════╡
-│ V ┆ V ┆ V        ┆ V               │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ V ┆ F ┆ V        ┆ V               │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ F ┆ V ┆ V        ┆ V               │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ F ┆ F ┆ F        ┆ V               │
-╰───┴───┴──────────┴─────────────────╯
-
-╭───┬───┬─────┬───────────┬─────────────────────╮
-│ p ┆ q ┆ ~ p ┆ (p and q) ┆ ((p and q) and ~ p) │
-╞═══╪═══╪═════╪═══════════╪═════════════════════╡
-│ V ┆ V ┆ F   ┆ V         ┆ F                   │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ V ┆ F ┆ F   ┆ F         ┆ F                   │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ F ┆ V ┆ V   ┆ F         ┆ F                   │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ F ┆ F ┆ V   ┆ F         ┆ F                   │
-╰───┴───┴─────┴───────────┴─────────────────────╯
-*/
 ```
+### Output
+TODO
 
 ## TODO
 - [ ] Support arguments with [clap](https://lib.rs/crates/clap)
   - [ ] Only vars values and final result
-  - [ ] Verbose arguments in each operation. `p or q` -> `V [V] F`
   - [ ] Tautology, contradiction and contingency indicator (IDK)
+- [X] Verbose in each operation. `p or q` -> `V [V] F`
 - [X] Better display operation `~ p` to `<color>~ p`

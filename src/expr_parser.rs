@@ -30,7 +30,6 @@ pub fn tokens_to_expr(tokens: &mut Vec<Token>) -> Expr {
             .for_each(|parser| exec_pattern(parser, tokens));
 
         if tokens == &tokens_before {
-            println!("{tokens:#?}");
             panic!("Parser reached a state where no further transformations are possible");
         }
     }
