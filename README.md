@@ -29,7 +29,7 @@ fn main() {
 // cargo run # in console
 ```
 ### Output
-TODO
+![A](assets/table.png)
 
 ## TODO
 - [ ] Support arguments with [clap](https://lib.rs/crates/clap)
