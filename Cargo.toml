@@ -13,3 +13,4 @@ license = "MIT"
 [dependencies]
 colored = { version = "3.0.0" }
 comfy-table = { version = "7.1.4", features = ["custom_styling"] }
+once_cell = "1.21.3"

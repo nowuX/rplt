@@ -1,24 +1,32 @@
-use rplt::token_parser::parser;
+use rplt::token_parser::{parser, vars_values};
 use rplt::Token;
+use std::collections::HashMap;
 
-/**
-p -> q
-p and q
-~p or q
-(p and q) -> r
-**/
 #[test]
 fn simple_str_parser() {
     assert_eq!(
-        vec![Token::Var("p".to_string()), Token::Conditional, Token::Var("q".to_string())],
+        vec![
+            Token::Var("p".to_string()),
+            Token::Conditional,
+            Token::Var("q".to_string())
+        ],
         parser("p -> q")
     );
     assert_eq!(
-        vec![Token::Var("p".to_string()), Token::And, Token::Var("q".to_string())],
+        vec![
+            Token::Var("p".to_string()),
+            Token::And,
+            Token::Var("q".to_string())
+        ],
         parser("p and q")
     );
     assert_eq!(
-        vec![Token::Not, Token::Var("p".to_string()), Token::Or, Token::Var("q".to_string())],
+        vec![
+            Token::Not,
+            Token::Var("p".to_string()),
+            Token::Or,
+            Token::Var("q".to_string())
+        ],
         parser("~ p or q")
     );
     assert_eq!(
@@ -53,7 +61,19 @@ fn long_str_parser() {
         ],
         parser("( p -> q ) and ( q -> r )")
     );
-    // ~(p and q) or (r and s)
-    //     ((p or q) and (~r or s)) -> t
-    // p <-> (q or ~r)
+}
+
+#[test]
+fn vars_values_test() {
+    assert_eq!(
+        vars_values(&[Token::Var(String::from("p"))]),
+        HashMap::from([(String::from("p"), vec![true, false])])
+    );
+    assert_eq!(
+        vars_values(&[Token::Var(String::from("p")), Token::Var(String::from("q"))]),
+        HashMap::from([
+            (String::from("p"), vec![true, true, false, false]),
+            (String::from("q"), vec![true, false, true, false])
+        ])
+    );
 }

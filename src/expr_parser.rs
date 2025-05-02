@@ -1,6 +1,8 @@
 use crate::{Expr, Token};
+use once_cell::sync::Lazy;
+use std::sync::Arc;
 
-type Pattern = (usize, Box<dyn Fn(&[Token]) -> Option<Expr>>);
+type Pattern = (usize, Arc<dyn Fn(&[Token]) -> Option<Expr> + Send + Sync>);
 
 pub fn tokens_to_expr(tokens: &mut Vec<Token>) -> Expr {
     if tokens.len() == 1 {
@@ -13,11 +15,11 @@ pub fn tokens_to_expr(tokens: &mut Vec<Token>) -> Expr {
     assert!(!tokens.is_empty(), "Tokens cannot be empty");
 
     let parsers = [
-        not_parser(),
-        var_to_var(),
-        var_to_expr(),
-        expr_to_var(),
-        expr_to_expr(),
+        &*NOT_PARSER,
+        &*VAR_TO_VAR,
+        &*VAR_TO_EXPR,
+        &*EXPR_TO_VAR,
+        &*EXPR_TO_EXPR,
     ];
 
     while !tokens.iter().all(|t| matches!(t, Token::Expr(_))) {
@@ -44,18 +46,18 @@ pub fn tokens_to_expr(tokens: &mut Vec<Token>) -> Expr {
 
 /// - ~ p
 /// - ~ ( expr )
-fn not_parser() -> Vec<Pattern> {
+static NOT_PARSER: Lazy<Vec<Pattern>> = Lazy::new(|| {
     vec![
         (
             2,
-            Box::new(|slice: &[Token]| match slice {
+            Arc::new(|slice: &[Token]| match slice {
                 [Token::Not, Token::Var(p)] => Some(Expr::Not(Box::new(Expr::Var(p.clone())))),
                 _ => None,
             }),
         ),
         (
             4,
-            Box::new(|slice: &[Token]| match slice {
+            Arc::new(|slice: &[Token]| match slice {
                 [
                     Token::Not,
                     Token::OpenParen,
@@ -66,13 +68,13 @@ fn not_parser() -> Vec<Pattern> {
             }),
         ),
     ]
-}
+});
 
 /// - p to p
-fn var_to_var() -> Vec<Pattern> {
+static VAR_TO_VAR: Lazy<Vec<Pattern>> = Lazy::new(|| {
     vec![(
         3,
-        Box::new(|slice: &[Token]| match slice {
+        Arc::new(|slice: &[Token]| match slice {
             [Token::Var(p), t, Token::Var(q)] => {
                 let p = Box::new(Expr::Var(p.clone()));
                 let q = Box::new(Expr::Var(q.clone()));
@@ -81,15 +83,15 @@ fn var_to_var() -> Vec<Pattern> {
             _ => None,
         }),
     )]
-}
+});
 
 /// - p to ( expr )
 /// - p to expr
-fn var_to_expr() -> Vec<Pattern> {
+static VAR_TO_EXPR: Lazy<Vec<Pattern>> = Lazy::new(|| {
     vec![
         (
             5,
-            Box::new(|slice: &[Token]| match slice {
+            Arc::new(|slice: &[Token]| match slice {
                 [
                     Token::Var(p),
                     t,
@@ -106,7 +108,7 @@ fn var_to_expr() -> Vec<Pattern> {
         ),
         (
             3,
-            Box::new(|slice: &[Token]| match slice {
+            Arc::new(|slice: &[Token]| match slice {
                 [Token::Var(p), t, Token::Expr(q)] => {
                     let p = Box::new(Expr::Var(p.to_owned()));
                     let q = Box::new(q.clone());
@@ -116,15 +118,15 @@ fn var_to_expr() -> Vec<Pattern> {
             }),
         ),
     ]
-}
+});
 
 /// - ( expr ) to var
 /// - expr to var
-fn expr_to_var() -> Vec<Pattern> {
+static EXPR_TO_VAR: Lazy<Vec<Pattern>> = Lazy::new(|| {
     vec![
         (
             5,
-            Box::new(|slice: &[Token]| match slice {
+            Arc::new(|slice: &[Token]| match slice {
                 [
                     Token::OpenParen,
                     Token::Expr(p),
@@ -141,7 +143,7 @@ fn expr_to_var() -> Vec<Pattern> {
         ),
         (
             3,
-            Box::new(|slice: &[Token]| match slice {
+            Arc::new(|slice: &[Token]| match slice {
                 [Token::Expr(p), t, Token::Var(q)] => {
                     let p = Box::new(p.clone());
                     let q = Box::new(Expr::Var(q.to_owned()));
@@ -151,17 +153,17 @@ fn expr_to_var() -> Vec<Pattern> {
             }),
         ),
     ]
-}
+});
 
 /// - expr to expr
 /// - ( expr ) to expr
 /// - expr to ( expr )
 /// - ( expr ) to ( expr )
-fn expr_to_expr() -> Vec<Pattern> {
+static EXPR_TO_EXPR: Lazy<Vec<Pattern>> = Lazy::new(|| {
     vec![
         (
             5,
-            Box::new(|slice: &[Token]| match slice {
+            Arc::new(|slice: &[Token]| match slice {
                 [
                     Token::Expr(p),
                     t,
@@ -178,7 +180,7 @@ fn expr_to_expr() -> Vec<Pattern> {
         ),
         (
             3,
-            Box::new(|slice: &[Token]| match slice {
+            Arc::new(|slice: &[Token]| match slice {
                 [Token::Expr(p), t, Token::Expr(q)] => {
                     let p = Box::new(p.clone());
                     let q = Box::new(q.clone());
@@ -189,7 +191,7 @@ fn expr_to_expr() -> Vec<Pattern> {
         ),
         (
             5,
-            Box::new(|slice: &[Token]| match slice {
+            Arc::new(|slice: &[Token]| match slice {
                 [
                     Token::OpenParen,
                     Token::Expr(p),
@@ -206,7 +208,7 @@ fn expr_to_expr() -> Vec<Pattern> {
         ),
         (
             7,
-            Box::new(|slice: &[Token]| match slice {
+            Arc::new(|slice: &[Token]| match slice {
                 [
                     Token::OpenParen,
                     Token::Expr(p),
@@ -224,9 +226,9 @@ fn expr_to_expr() -> Vec<Pattern> {
             }),
         ),
     ]
-}
+});
 
-fn exec_pattern(patterns: &[Pattern], tokens: &mut Vec<Token>) {
+pub fn exec_pattern(patterns: &[Pattern], tokens: &mut Vec<Token>) {
     for (token_size, pattern_fn) in patterns {
         let mut i = 0;
         while i + token_size - 1 < tokens.len() {
@@ -236,7 +238,7 @@ fn exec_pattern(patterns: &[Pattern], tokens: &mut Vec<Token>) {
     }
 }
 
-fn expr_matcher(t: &Token, p: Box<Expr>, q: Box<Expr>) -> Option<Expr> {
+pub fn expr_matcher(t: &Token, p: Box<Expr>, q: Box<Expr>) -> Option<Expr> {
     match t {
         Token::Or => Some(Expr::Or(p, q)),
         Token::And => Some(Expr::And(p, q)),
@@ -246,7 +248,7 @@ fn expr_matcher(t: &Token, p: Box<Expr>, q: Box<Expr>) -> Option<Expr> {
     }
 }
 
-fn replace_expr(expr: Option<Expr>, i: &mut usize, tokens: &mut Vec<Token>, token_size: usize) {
+pub fn replace_expr(expr: Option<Expr>, i: &mut usize, tokens: &mut Vec<Token>, token_size: usize) {
     match expr {
         None => *i += 1,
         Some(expr) => {
