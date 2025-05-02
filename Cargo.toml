@@ -1,9 +1,9 @@
 [package]
 name = "rplt"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 authors = ["Nowu"]
-description = "RPLT (Rust Propsoitional Logic Table) is a lightweight truth table generator for propositional logic expressions. Written in Rust, it parses logical formulas and outputs their complete truth tables. Supports operators like NOT, AND, OR, CONDITIONAL and BICONDITIONAL"
+description = "RPLT (Rust Propsoitional Logic Table) is a truth table generator for propositional logic expressions. Written in Rust, it parses logical formulas and outputs their complete truth tables. Supports operators like NOT, AND, OR, CONDITIONAL and BICONDITIONAL"
 repository = "https://github.com/nowuX/rplt"
 keywords = ["logic", "parser"]
 readme = "README.md"
@@ -11,4 +11,9 @@ categories = ["parsing"]
 license = "MIT"
 
 [dependencies]
-comfy-table = { version = "7.1.4" }
+colored = { version = "3.0.0" }
+comfy-table = { version = "7.1.4", features = ["custom_styling"] }
+once_cell = "1.21.3"
+
+[dev-dependencies]
+test-case = "3.3.1"

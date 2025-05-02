@@ -1,5 +1,5 @@
 # RLPT
-RPLT (Rust Propsoitional Logic Table) is a lightweight truth table generator for propositional logic expressions. Written in Rust, it parses logical formulas and outputs their complete truth tables. Supports operators like NOT, AND, OR, CONDITIONAL and BICONDITIONAL
+RPLT (Rust Propositional Logic Table) is a lightweight truth table generator for propositional logic expressions. Written in Rust, it parses logical formulas and outputs their complete truth tables. Supports operators like NOT, AND, OR, CONDITIONAL and BICONDITIONAL
 
 # Build From Source
 
@@ -19,41 +19,21 @@ cargo run
 Change the `s` value in `main.rs`
 ```rust
 // in main.rs
-let s = vec![
-    "p -> ( p or q )",
-    "( p and q ) and ~ p",
-];
+fn main() {
+    let s = vec![
+        "p -> ( p or q )",
+        "( p and q ) and ~ p",
+        // Add or edit this
+    ];
+}
 // cargo run # in console
-/**
-Output:
-╭───┬───┬──────────┬─────────────────╮
-│ p ┆ q ┆ (p or q) ┆ (p -> (p or q)) │
-╞═══╪═══╪══════════╪═════════════════╡
-│ V ┆ V ┆ V        ┆ V               │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ V ┆ F ┆ V        ┆ V               │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ F ┆ V ┆ V        ┆ V               │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ F ┆ F ┆ F        ┆ V               │
-╰───┴───┴──────────┴─────────────────╯
-
-╭───┬───┬─────┬───────────┬─────────────────────╮
-│ p ┆ q ┆ ~ p ┆ (p and q) ┆ ((p and q) and ~ p) │
-╞═══╪═══╪═════╪═══════════╪═════════════════════╡
-│ V ┆ V ┆ F   ┆ V         ┆ F                   │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ V ┆ F ┆ F   ┆ F         ┆ F                   │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ F ┆ V ┆ V   ┆ F         ┆ F                   │
-├╌╌╌┼╌╌╌┼╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ F ┆ F ┆ V   ┆ F         ┆ F                   │
-╰───┴───┴─────┴───────────┴─────────────────────╯
-*/
 ```
+### Output
+![A](assets/table.png)
 
 ## TODO
-- [ ] Support arguments with Clap
-- [ ] Better display value `~ p` -> `[F] V`, `p or q` -> `V [V] F`
-- [ ] Optional better display
-- [ ] Just vars and result table
+- [ ] Support arguments with [clap](https://lib.rs/crates/clap)
+  - [ ] Only vars values and final result
+  - [ ] Tautology, contradiction and contingency indicator (IDK)
+- [X] Verbose in each operation. `p or q` -> `V [V] F`
+- [X] Better display operation `~ p` to `<color>~ p`
