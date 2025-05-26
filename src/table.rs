@@ -5,7 +5,7 @@ use comfy_table::presets::UTF8_FULL;
 use comfy_table::{Cell, CellAlignment, ContentArrangement, Table};
 use std::collections::HashMap;
 
-pub fn generate_table(ctx: &HashMap<String, Vec<Value>>) -> Table {
+pub fn generate_table(ctx: &HashMap<String, Vec<Value>>, verbose: bool) -> Table {
     let mut t = Table::new();
     t.set_content_arrangement(ContentArrangement::Dynamic)
         .load_preset(UTF8_FULL)
@@ -35,15 +35,23 @@ pub fn generate_table(ctx: &HashMap<String, Vec<Value>>) -> Table {
                         }
                     }
                     Value::Expr(Some(p), r, None) => {
-                        let p = if *p { "V".dimmed() } else { "F".dimmed() };
                         let r = if *r { "V".normal() } else { "F".normal() };
-                        format!("{p} [{r}]").normal()
+                        if verbose {
+                            let p = if *p { "V".dimmed() } else { "F".dimmed() };
+                            format!("{p} [{r}]").normal()
+                        } else {
+                            format!("{r}").normal()
+                        }
                     }
                     Value::Expr(Some(p), r, Some(q)) => {
-                        let p = if *p { "V".dimmed() } else { "F".dimmed() };
                         let r = if *r { "V".normal() } else { "F".normal() };
-                        let q = if *q { "V".dimmed() } else { "F".dimmed() };
-                        format!("{p} [{r}] {q}").normal()
+                        if verbose {
+                            let p = if *p { "V".dimmed() } else { "F".dimmed() };
+                            let q = if *q { "V".dimmed() } else { "F".dimmed() };
+                            format!("{p} [{r}] {q}").normal()
+                        } else {
+                            format!("{r}").normal()
+                        }
                     }
                     _ => panic!("what"),
                 },
