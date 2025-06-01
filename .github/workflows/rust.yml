@@ -24,8 +24,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: cargo-install
-      run: curl -LsSf https://get.nexte.st/latest/linux | tar zxf - -C ${CARGO_HOME:-~/.cargo}/bin
+    - name: Install cargo-nextest
+    - uses: taiki-e/install-action@v2
+      with:
+        tool: nextest
     - name: Build
       run: cargo build --verbose
     - name: Run tests
