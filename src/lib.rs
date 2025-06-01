@@ -8,14 +8,19 @@ pub mod token_parser;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     Var(String),
+    Op(Op),
+    OpenParen,
+    CloseParen,
+    Expr(Expr),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Op {
     Not,
     Or,
     And,
     Conditional,
     BiConditional,
-    OpenParen,
-    CloseParen,
-    Expr(Expr),
 }
 
 #[derive(Debug, Clone, PartialEq)]

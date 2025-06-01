@@ -1,16 +1,16 @@
-use crate::{Token, Value};
+use crate::{Op, Token, Value};
 use std::collections::{HashMap, HashSet};
 
-pub fn parser(input: &str) -> Vec<Token> {
-    // TODO change Token::Var(char) to Token::Var(String) to able to do ~ person instead or ~ p
+pub fn token_parser(input: &str) -> Vec<Token> {
+    // TODO increment parser
     input
         .split_whitespace()
         .map(|word| match word {
-            "~" => Token::Not,
-            "or" => Token::Or,
-            "and" => Token::And,
-            "->" => Token::Conditional,
-            "<->" => Token::BiConditional,
+            "~" => Token::Op(Op::Not),
+            "or" => Token::Op(Op::Or),
+            "and" => Token::Op(Op::And),
+            "->" => Token::Op(Op::Conditional),
+            "<->" => Token::Op(Op::BiConditional),
             "(" => Token::OpenParen,
             ")" => Token::CloseParen,
             &_ => Token::Var(word.chars().next().unwrap().to_string()),
