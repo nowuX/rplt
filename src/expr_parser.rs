@@ -1,4 +1,4 @@
-use crate::{Expr, Token};
+use crate::{Expr, Op, Token};
 use once_cell::sync::Lazy;
 use std::sync::Arc;
 
@@ -50,7 +50,9 @@ static NOT_PARSER: Lazy<Vec<Pattern>> = Lazy::new(|| {
         (
             2,
             Arc::new(|slice: &[Token]| match slice {
-                [Token::Not, Token::Var(p)] => Some(Expr::Not(Box::new(Expr::Var(p.clone())))),
+                [Token::Op(Op::Not), Token::Var(p)] => {
+                    Some(Expr::Not(Box::new(Expr::Var(p.clone()))))
+                }
                 _ => None,
             }),
         ),
@@ -58,7 +60,7 @@ static NOT_PARSER: Lazy<Vec<Pattern>> = Lazy::new(|| {
             4,
             Arc::new(|slice: &[Token]| match slice {
                 [
-                    Token::Not,
+                    Token::Op(Op::Not),
                     Token::OpenParen,
                     Token::Expr(p),
                     Token::CloseParen,
@@ -239,10 +241,13 @@ pub fn exec_pattern(patterns: &[Pattern], tokens: &mut Vec<Token>) {
 
 pub fn expr_matcher(t: &Token, p: Box<Expr>, q: Box<Expr>) -> Option<Expr> {
     match t {
-        Token::Or => Some(Expr::Or(p, q)),
-        Token::And => Some(Expr::And(p, q)),
-        Token::Conditional => Some(Expr::Conditional(p, q)),
-        Token::BiConditional => Some(Expr::BiConditional(p, q)),
+        Token::Op(op) => match op {
+            Op::Or => Some(Expr::Or(p, q)),
+            Op::And => Some(Expr::And(p, q)),
+            Op::Conditional => Some(Expr::Conditional(p, q)),
+            Op::BiConditional => Some(Expr::BiConditional(p, q)),
+            _ => None,
+        },
         _ => None,
     }
 }

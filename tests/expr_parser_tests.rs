@@ -1,5 +1,5 @@
 use rplt::expr_parser::{exec_pattern, expr_matcher, tokens_to_expr};
-use rplt::{Expr, Token};
+use rplt::{Expr, Op, Token};
 use std::sync::Arc;
 
 #[test]
@@ -12,12 +12,12 @@ fn token_to_expr_test() {
 
 #[test]
 fn exec_pattern_test() {
-    let mut tokens = vec![Token::Not, Token::Var(String::from("p"))];
+    let mut tokens = vec![Token::Op(Op::Not), Token::Var(String::from("p"))];
     exec_pattern(
         &[(
             2,
             Arc::new(|slice: &[Token]| match slice {
-                [Token::Not, Token::Var(p)] => Some(Expr::Not(Box::new(Expr::Var(p.clone())))),
+                [Token::Op(Op::Not), Token::Var(p)] => Some(Expr::Not(Box::new(Expr::Var(p.clone())))),
                 _ => None,
             }),
         )],
@@ -36,7 +36,7 @@ fn expr_matcher_test() {
     for i in [
         Token::OpenParen,
         Token::CloseParen,
-        Token::Not,
+        Token::Op(Op::Not),
         Token::Var(String::from("r")),
     ] {
         assert_eq!(
@@ -51,7 +51,7 @@ fn expr_matcher_test() {
 
     assert_eq!(
         expr_matcher(
-            &Token::Or,
+            &Token::Op(Op::Or),
             Box::new(Expr::Var(String::from("p"))),
             Box::new(Expr::Var(String::from("q")))
         ),
@@ -62,7 +62,7 @@ fn expr_matcher_test() {
     );
     assert_eq!(
         expr_matcher(
-            &Token::And,
+            &Token::Op(Op::And),
             Box::new(Expr::Var(String::from("p"))),
             Box::new(Expr::Var(String::from("q")))
         ),
@@ -73,7 +73,7 @@ fn expr_matcher_test() {
     );
     assert_eq!(
         expr_matcher(
-            &Token::Conditional,
+            &Token::Op(Op::Conditional),
             Box::new(Expr::Var(String::from("p"))),
             Box::new(Expr::Var(String::from("q")))
         ),
@@ -84,7 +84,7 @@ fn expr_matcher_test() {
     );
     assert_eq!(
         expr_matcher(
-            &Token::BiConditional,
+            &Token::Op(Op::BiConditional),
             Box::new(Expr::Var(String::from("p"))),
             Box::new(Expr::Var(String::from("q")))
         ),

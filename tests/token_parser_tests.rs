@@ -1,5 +1,5 @@
-use rplt::token_parser::{parser, vars_values};
-use rplt::{Token, Value};
+use rplt::token_parser::{token_parser, vars_values};
+use rplt::{Op, Token, Value};
 use std::collections::HashMap;
 
 #[test]
@@ -7,39 +7,39 @@ fn simple_str_parser() {
     assert_eq!(
         vec![
             Token::Var("p".to_string()),
-            Token::Conditional,
+            Token::Op(Op::Conditional),
             Token::Var("q".to_string())
         ],
-        parser("p -> q")
+        token_parser("p -> q")
     );
     assert_eq!(
         vec![
             Token::Var("p".to_string()),
-            Token::And,
+            Token::Op(Op::And),
             Token::Var("q".to_string())
         ],
-        parser("p and q")
+        token_parser("p and q")
     );
     assert_eq!(
         vec![
-            Token::Not,
+            Token::Op(Op::Not),
             Token::Var("p".to_string()),
-            Token::Or,
+            Token::Op(Op::Or),
             Token::Var("q".to_string())
         ],
-        parser("~ p or q")
+        token_parser("~ p or q")
     );
     assert_eq!(
         vec![
             Token::OpenParen,
             Token::Var("p".to_string()),
-            Token::And,
+            Token::Op(Op::And),
             Token::Var("q".to_string()),
             Token::CloseParen,
-            Token::Conditional,
+            Token::Op(Op::Conditional),
             Token::Var("r".to_string())
         ],
-        parser("( p and q ) -> r")
+        token_parser("( p and q ) -> r")
     );
 }
 
@@ -49,17 +49,17 @@ fn long_str_parser() {
         vec![
             Token::OpenParen,
             Token::Var("p".to_string()),
-            Token::Conditional,
+            Token::Op(Op::Conditional),
             Token::Var("q".to_string()),
             Token::CloseParen,
-            Token::And,
+            Token::Op(Op::And),
             Token::OpenParen,
             Token::Var("q".to_string()),
-            Token::Conditional,
+            Token::Op(Op::Conditional),
             Token::Var("r".to_string()),
             Token::CloseParen
         ],
-        parser("( p -> q ) and ( q -> r )")
+        token_parser("( p -> q ) and ( q -> r )")
     );
 }
 

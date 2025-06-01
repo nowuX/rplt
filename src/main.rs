@@ -2,7 +2,7 @@ use clap::{Arg, ArgAction, Command};
 use rplt::eval::eval;
 use rplt::expr_parser::tokens_to_expr;
 use rplt::table::generate_table;
-use rplt::token_parser::{parser, vars_values};
+use rplt::token_parser::{token_parser, vars_values};
 
 fn main() {
     let args = Command::new("rplt")
@@ -33,7 +33,7 @@ fn main() {
     match matches.subcommand() {
         Some(("table", a)) => {
             let i = a.get_one::<String>("input").unwrap();
-            let mut tokens = parser(&i);
+            let mut tokens = token_parser(&i);
             let mut ctx = vars_values(&tokens);
             let expr = tokens_to_expr(&mut tokens);
             let _ = eval(&expr, &mut ctx);
