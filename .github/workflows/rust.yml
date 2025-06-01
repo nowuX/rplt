@@ -4,11 +4,13 @@ on:
   push:
     branches: [ "main", "dev" ]
     paths:
+      - '.github/workflows/rust.yml'
       - '**/*.rs'
       - 'Cargo.toml'
   pull_request:
     branches: [ "main", "dev" ]
     paths:
+      - '.github/workflows/rust.yml'
       - '**/*.rs'
       - 'Cargo.toml'
 
@@ -22,8 +24,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install nextest
-      run: cargo install cargo-nextest
+    - name: cargo-install
+      uses: baptiste0928/cargo-install@v3.3.0
+      with:
+        crate: cargo-nextest
     - name: Build
       run: cargo build --verbose
     - name: Run tests
